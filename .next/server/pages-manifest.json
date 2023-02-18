@@ -1,0 +1,13 @@
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/api/final": "pages/api/final.js",
+  "/api/rounds": "pages/api/rounds.js",
+  "/api/standings": "pages/api/standings.js",
+  "/tournaments/[tournamentId]": "pages/tournaments/[tournamentId].js",
+  "/api/match": "pages/api/match.js",
+  "/api/auto": "pages/api/auto.js",
+  "/api/update": "pages/api/update.js",
+  "/api/roster": "pages/api/roster.js"
+}
