@@ -23,7 +23,7 @@ export default async function handler(req, res) {
         //first, figure out how many people are here!
         console.log(req.body.matchData)
         for(const match of req.body.matchData){
-          console.log(match)
+          console.log(match.whiteId,match.blackId+'match')
             await prisma.match.update({
                 where: {
                   id: match.id,

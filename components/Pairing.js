@@ -67,6 +67,7 @@ export default function Pairing({section}){
 
     //Update the match data for current round in the db.
     async function save(){
+        console.log('match data'+matchData)
         await fetch("/api/update", {
             method: 'POST',
             headers: {
@@ -324,10 +325,7 @@ function TableRow({element, index, matches, setMatches, players, setSync}){
             </td>
             
             <td className='border border-r border-2 border-black text-center w-1/3 p-2'>
-                <Select options = {players} value={whiteOption} onChange={()=>{
-                    setSync(false)
-                    setWhiteOption()
-                }}/>
+                <Select options = {players} value={whiteOption} onChange={setWhiteOption}/>
             </td>
             <td className="border border-r border-2 border-black text-center w-1/3 p-2">
                 <Select options = {players} value={blackOption} onChange={setBlackOption} />
