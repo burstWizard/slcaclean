@@ -24,9 +24,10 @@ export default async function handler(req, res) {
             //handle student addition
             const player = await prisma.player.create({
                 data:{
-                    name: req.body.student,
+                    id: req.body.student,
                     schoolId: req.body.schoolId,
-                    sectionId: req.body.sectionId
+                    sectionId: req.body.sectionId,
+                    name:req.body.student
                 }
             })
         }
@@ -40,6 +41,17 @@ export default async function handler(req, res) {
                 }
             })
         }
+        res.status(200).json({message: "Hello"});
+    }
+    if (req.method=='DELETE'){
+        const user = await prisma.player.findMany()
+        console.log(user[0].name+'userrrrrrrrrrrrrrr')
+        const deletePlayer = await prisma.player.delete({
+            where:{
+                id:req.body.id,
+            },
+        })
+        console.log(deletePlayer)
         res.status(200).json({message: "Hello"});
     }
     else{

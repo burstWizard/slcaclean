@@ -1,4 +1,4 @@
-import { PlusCircleIcon, CheckIcon, XMarkIcon, PlusSmallIcon } from "@heroicons/react/20/solid";
+import { PlusCircleIcon, CheckIcon, XMarkIcon, PlusSmallIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { useState, useEffect } from "react";
 
 
@@ -22,7 +22,16 @@ export default function Roster({section}){
         
         fetchRoster();
     },[section])
-
+    async function deletePlayer(name,studentID){
+        await fetch('/api/roster',{
+            method:'DELETE',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body:JSON.stringify({studentName:name,id:studentID})
+        })
+        fetchRoster()
+    }
     async function addNewSchool(){
         await fetch("/api/roster", {
             method: 'POST',
@@ -49,11 +58,12 @@ export default function Roster({section}){
         fetchRoster();
 
     }
+
     
     return(
         <div>
             {roster && roster.map((schoolPack, index)=>{
-                return(<SchoolDisplay schoolPack={schoolPack} key={index} addNewStudent={addNewStudent} />)
+                return(<SchoolDisplay schoolPack={schoolPack} key={index} addNewStudent={addNewStudent} deletePlayer={deletePlayer}/>)
             })}
             {roster && roster.length == 0 &&
                 <div>
@@ -82,15 +92,19 @@ export default function Roster({section}){
     )
 }
 
-function SchoolDisplay({schoolPack, addNewStudent}){
+function SchoolDisplay({schoolPack, addNewStudent,deletePlayer}){
     const [addNew, setAddNew] = useState(false)
     const [newStudentName, setNewStudentName] = useState("")
-
     return(
         <div>
             <h1 className='font-bold text-purple-500 '>{schoolPack[0].name}</h1>
             {schoolPack[1].map((student, index)=>
+                <div style={{display:'flex'}}>
                 <p key = {index}>{student.name}</p>
+                <TrashIcon style={{width:20,height:20}} onClick={()=>{
+                    deletePlayer(student.name,student.id)
+                    }}/>
+                </div>
             )}
             {addNew ? 
                 <div className='flex items-center space-x-2'>
