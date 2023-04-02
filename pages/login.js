@@ -19,7 +19,7 @@ export default function Login() {
         <div className='border-2 border-white p-6'>
           <Image src="/slca_logo.png" height={150} width={248}/>
           <h1 className='text-2xl font-bold text-purple-500 mt-2 mb-4'>Login.</h1>
-          <button onClick={()=>signIn('google',{callbackUrl:'/player'})} className="flex items-center bg-blue-500 text-white font-bold rounded-lg p-2">
+          <button onClick={()=>signIn('google')} className="flex items-center bg-blue-500 text-white font-bold rounded-lg p-2">
             <ArrowRightCircleIcon className='h-5 w-5 mr-2'/>
             <p>Sign in with Google</p>
           </button>
