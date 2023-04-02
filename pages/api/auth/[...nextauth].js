@@ -16,7 +16,7 @@ export const authOptions = {
           response_type: "code"
         }
       }
-    })
+    }),
   ],
   secret:process.env.NEXTAUTH_SECRET,
 }
