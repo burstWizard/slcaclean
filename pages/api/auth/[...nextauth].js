@@ -18,5 +18,6 @@ export const authOptions = {
       }
     })
   ],
+  secret:"neccessarySecret",
 }
 export default NextAuth(authOptions)
