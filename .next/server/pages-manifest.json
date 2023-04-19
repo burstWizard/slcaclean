@@ -3,5 +3,10 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/player": "pages/player.js",
-  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js"
+  "/api/tourn": "pages/api/tourn.js",
+  "/tournaments/[tournamentId]": "pages/tournaments/[tournamentId].js",
+  "/api/roster": "pages/api/roster.js",
+  "/api/sections": "pages/api/sections.js",
+  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
+  "/tournaments": "pages/tournaments.js"
 }

@@ -77,7 +77,21 @@ export default function Pairing({section}){
         })
         fetchMatchData();
     }
+    //delete the current round
 
+    async function deleteRound(){
+        const res = await fetch('/api/update',{
+            method:'DELETE',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body:JSON.stringify({matchData:matchData})
+        })
+
+        const data = await res.json()
+        console.log(data)
+        fetchMatchData()
+    }
     async function autoPair(){
         const res = await fetch("/api/auto?sectionId=" + section + "&roundId=" + activeRound);
         const data = await res.json();
@@ -129,6 +143,10 @@ export default function Pairing({section}){
                             <button onClick = {save} className="flex items-center space-x-2 disabled items-center bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded max-w-fit cursor-pointer"> 
                                 <CloudArrowUpIcon className="h-5 w-5" />
                                 <p>Save Matches</p>
+                            </button>
+
+                            <button onClick={deleteRound} className="flex space-x-2 items-center bg-red-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                                <p>Delete Current Round</p>
                             </button>
                             
                             <Modal createNextRound={createNextRound} disabled = {!sync}/>

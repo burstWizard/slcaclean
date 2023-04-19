@@ -38,7 +38,7 @@ export default function Roster({section}){
             headers: {
                 'Content-Type': 'application/json',
               },
-            body: JSON.stringify({school: newSchoolName, sectionId: section, setting: "school"}),
+            body: JSON.stringify({school: newSchoolName, sectionId: section, setting: "school", colorHistory:[]}),
         })
         fetchRoster();
         setAddNew(false);

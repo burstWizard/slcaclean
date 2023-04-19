@@ -19,6 +19,12 @@ export default async function handler(req, res) {
     if(req.method == "POST"){
         //Handle both adding students and adding schools
         console.log(req.body.setting)
+        const tournaments = await prisma.section.findMany();
+        const rounds = await prisma.round.findMany({
+            where:{
+                sectionId: req.body.sectionId
+            }
+        })
         if(req.body.setting == "student"){
             console.log("Trello")
             //handle student addition
@@ -27,7 +33,8 @@ export default async function handler(req, res) {
                     id: req.body.student,
                     schoolId: req.body.schoolId,
                     sectionId: req.body.sectionId,
-                    name:req.body.student
+                    name:req.body.student,
+                    record:5*rounds.length
                 }
             })
         }

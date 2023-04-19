@@ -91,6 +91,7 @@ model Player {
   schoolId     String
   school       School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   record       Int    @default(0)
+  colorHistory String[] 
   whiteMatches Match[] @relation("White")
   blackMatches Match[] @relation("Black")       
 }

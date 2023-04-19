@@ -41,6 +41,16 @@ export default async function handler(req, res) {
         
         res.status(200).json({message: "hello"});
     }
+    if (req.method=='DELETE'){
+
+      await prisma.round.delete({
+        where:{
+          id:req.body.matchData[0].roundId,
+        },
+      })
+      
+      res.status(200).json({message: "hello"});
+    }
     else{
         
         res.status(200).json({ message: "hello" });

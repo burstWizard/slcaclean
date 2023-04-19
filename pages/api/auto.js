@@ -1,13 +1,14 @@
 import prisma from "../../lib/prisma"
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]"
+import {Swiss} from 'tournament-pairings'; 
 
 const hello = require('swiss-pairing')()
 
 export default async function handler(req, res) {
 
     const session = await unstable_getServerSession(req, res, authOptions)
-
+    let swiss_pairings = []
     if (!session) {
         res.status(401).json({ message: "You must be logged in." });
         return;
@@ -39,12 +40,19 @@ export default async function handler(req, res) {
                 sectionId: req.query.sectionId,
             },
         });
-
         let participants = []
         for(const player of players){
+            let teamList = []
+            for (const restOfPlayers of players){
+                if (restOfPlayers.schoolId == player.schoolId && restOfPlayers.id != player.id) {
+                    teamList.push(restOfPlayers.id)
+                }
+            }
             participants.push(
                 {
-                    'id': player.id
+                    'id': player.id,
+                    'score':player.record,
+                    'avoid':teamList,
                 }
             )
         }
@@ -72,7 +80,7 @@ export default async function handler(req, res) {
                 }
             }
         })
-        console.log(matchData)
+        console.log(matchData,'match dataaaaa')
 
         let realMatches = []
 
@@ -88,10 +96,14 @@ export default async function handler(req, res) {
                     'points': (10-match.result)/10
                 }
             })
+
         }
 
-        console.log(realMatches)
+        console.log(realMatches,'matchesss')
+        
 
+        const newPairings = Swiss(participants,round.num,false,true)
+        console.log(newPairings,"new pairingsssssssssss")
         const excellentRes = hello.getMatchups(2, participants, realMatches)
         console.log(excellentRes)
 
@@ -101,17 +113,18 @@ export default async function handler(req, res) {
                 roundId: req.query.roundId
             }
         })
-
+        console.log(currMatches,'current matches')
         //now to update the match pairings.
+        
         let temp = []
-        for (let i = 0; i < excellentRes.length; i++) {
+        for (let i = 0; i < newPairings.length; i++) {
             temp.push({
                 id: currMatches[i].id,
-                whiteId: excellentRes[i].home,
-                blackId: excellentRes[i].away
+                whiteId: newPairings[i].player1,
+                blackId: newPairings[i].player2
             })
         }
-
+        console.log(temp,'tempppppp')
         for(const item of temp){
             await prisma.match.update({
                 where: {
@@ -124,6 +137,7 @@ export default async function handler(req, res) {
                 },
               })
         }
+        
 
         res.status(200).json({ message: "Pairing Success! Please Refresh Round Data."});
     }
