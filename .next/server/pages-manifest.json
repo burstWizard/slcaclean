@@ -2,14 +2,9 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/player": "pages/player.js",
-  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
-  "/": "pages/index.js",
   "/api/tourn": "pages/api/tourn.js",
   "/api/sections": "pages/api/sections.js",
-  "/tournaments": "pages/tournaments.js",
   "/tournaments/[tournamentId]": "pages/tournaments/[tournamentId].js",
   "/api/roster": "pages/api/roster.js",
-  "/api/rounds": "pages/api/rounds.js",
-  "/api/match": "pages/api/match.js"
+  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js"
 }
