@@ -2,9 +2,10 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/tourn": "pages/api/tourn.js",
-  "/api/sections": "pages/api/sections.js",
-  "/tournaments/[tournamentId]": "pages/tournaments/[tournamentId].js",
+  "/api/update": "pages/api/update.js",
+  "/api/match": "pages/api/match.js",
   "/api/roster": "pages/api/roster.js",
-  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js"
+  "/api/rounds": "pages/api/rounds.js",
+  "/tournaments/[tournamentId]": "pages/tournaments/[tournamentId].js",
+  "/api/final": "pages/api/final.js"
 }

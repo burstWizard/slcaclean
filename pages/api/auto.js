@@ -73,12 +73,10 @@ export default async function handler(req, res) {
             }
         })
 
-        console.log(matchData);
-
         pairing.clearAll();
 
         // Turn matches into form acceptable by pairing.js
-        pairing.insert_tournament(null, null, null, null, Infinity);
+        pairing.insert_tournament(null, null, null, null, 4);
 
         let player_to_school_temp = {};
 
@@ -111,8 +109,11 @@ export default async function handler(req, res) {
             pairing.update_tournament_players(0, i);
         }
 
+        console.log("pairing_to_player", pairing_to_player);
 
-        let temp2 = pairing.run_round(0);
+
+        let temp2 = pairing.full_pairing(0);
+        console.log("Pairing module results:", temp2)
         let new_matches = temp2[0], bye_player = temp2[1];
 
         let currMatches = await prisma.match.findMany({
@@ -129,6 +130,8 @@ export default async function handler(req, res) {
                 blackId: pairing_to_player[new_matches[i].black_index],
             })
         }
+
+        console.log(temp);
 
         for (const item of temp) {
             await prisma.match.update({
