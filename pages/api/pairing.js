@@ -7,15 +7,15 @@ const PLAYER_PAUSED = 0;
 const PLAYER_ACTIVE = 1;
 
 /* tables */
-let tournament_register = {};
-let match_register = {};
-let school_register = {};
-let player_register = {};
+export let tournament_register = {};
+export let match_register = {};
+export let school_register = {};
+export let player_register = {};
 
-let tournament_register_id = 0;
-let match_register_id = 0;
-let school_register_id = 0;
-let player_register_id = 0;
+export let tournament_register_id = 0;
+export let match_register_id = 0;
+export let school_register_id = 0;
+export let player_register_id = 0;
 
 /* access functions */
 export function insert_school(school_name, school_state, school_district) {
@@ -1559,10 +1559,10 @@ export function run_round(tournament_index) {
 
     // Return only used for test cases
     // TODO: Change this two work for something else
-    return new_matches, leftover;
+    return [new_matches, leftover];
 }
 
-/* export */ function clearAll() {
+export function clearAll() {
     tournament_register = {};
     match_register = {};
     school_register = {};
@@ -1901,7 +1901,7 @@ function test_case_4() {
 
 const ATTEMPT_AMOUNT = 10000;
 
-
+/*
 test_case_1();
 console.log("\n");
 test_case_2();
@@ -1909,5 +1909,5 @@ console.log("\n");
 test_case_3();
 console.log("\n");
 test_case_4();
-
+*/
 /* end of testing */

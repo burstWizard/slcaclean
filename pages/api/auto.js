@@ -85,6 +85,8 @@ export default async function handler(req, res) {
             pairing.insert_school(school.name, null, null, school.id);
         }
 
+        console.log(player_to_school_temp)
+
         let pairing_to_player = {};
 
         for (const player of players) {
@@ -105,15 +107,15 @@ export default async function handler(req, res) {
             }
         }
 
+        console.log(pairing.match_register);
+
         for (let i = 0; i < pairing.player_register_id; i++) {
             pairing.update_tournament_players(0, i);
         }
 
-        console.log("pairing_to_player", pairing_to_player);
 
-
-        let temp2 = pairing.full_pairing(0);
-        console.log("Pairing module results:", temp2)
+        let temp2 = pairing.run_round(0);
+        console.log("Pairing module results:", temp2);
         let new_matches = temp2[0], bye_player = temp2[1];
 
         let currMatches = await prisma.match.findMany({
