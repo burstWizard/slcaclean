@@ -1,11 +1,5 @@
 {
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
-  "/_document": "pages/_document.js",
-  "/api/update": "pages/api/update.js",
-  "/api/match": "pages/api/match.js",
-  "/api/roster": "pages/api/roster.js",
-  "/api/rounds": "pages/api/rounds.js",
-  "/tournaments/[tournamentId]": "pages/tournaments/[tournamentId].js",
-  "/api/final": "pages/api/final.js"
+  "/_document": "pages/_document.js"
 }
