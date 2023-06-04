@@ -307,6 +307,8 @@ export function get_player_black(tournament_index, player_index) {
 
     for (let match_index of Object.keys(match_register)) {
         let match = match_register[match_index];
+        if (match.bye_match) continue;
+
         if (
             match.tournament_index == tournament_index &&
             match.black_player_index == player_index
@@ -324,6 +326,8 @@ export function get_player_white(tournament_index, player_index) {
 
     for (let match_index of Object.keys(match_register)) {
         let match = match_register[match_index];
+        if (match.bye_match) continue;
+
         if (
             match.tournament_index == tournament_index &&
             match.white_player_index == player_index
@@ -524,7 +528,7 @@ export function read_players_db(tournament_index) {
             school: player.school_name,
             rank: 0,
             matches: [],
-            score: get_player_wins(tournament_index, player_index) + get_player_byes(tournament_index, player_index),
+            score: get_player_wins(tournament_index, player_index),
             record: {
                 win: get_player_wins(tournament_index, player_index),
                 loss: get_player_loss(tournament_index, player_index),
@@ -1132,7 +1136,7 @@ export function run_round(tournament_index) {
         }
     }
 
-    console.log("Attempts:", tries, "\nFailed pairing?", failed);
+    console.log("Attempts:", tries);
 
     if (
         new_matches.length < Math.floor(Object.keys(players).length / 2) ||
@@ -1278,7 +1282,7 @@ export function run_round(tournament_index) {
                     ww,
                     leftover,
                     round_total,
-                    false,
+                    true,
                     false
                 );
 
@@ -1338,6 +1342,109 @@ export function run_round(tournament_index) {
     }
 
     console.log("Score disregard pairing?", failed);
+
+    if (
+        new_matches.length < Math.floor(Object.keys(players).length / 2) ||
+        failed
+    ) {
+        failed = false;
+        console.log("Not accounting for score now");
+        let tries = 0;
+        while (true) {
+            //console.log("Full pairing attempt:", tries);
+            tries++;
+
+            // Sort the players based on wins
+            let win_list = sort_wins(current_round, players);
+
+            // Initialize the rolling left over player and list to store matches
+            let _leftover = [];
+            let matches = [];
+
+            // TODO: Make it not be xx
+            for (let xx = 0; xx < win_list.length; xx++) {
+                // Select each score bracket, in reverse
+                let ww = win_list[win_list.length - xx - 1];
+
+                if (ww.indexOf([]) != -1) {
+                    ww.splice(ww.indexOf([]), 1);
+                }
+
+                while (_leftover.length > 1) {
+                    if (ww.indexOf(_leftover[_leftover.length - 1]) == -1) {
+                        ww.push(_leftover.pop());
+                    } else {
+                        _leftover.pop();
+                    }
+                }
+
+                if (ww.indexOf([]) != -1) {
+                    ww.splice(ww.indexOf([]), 1);
+                }
+
+                // Try making matches
+                let n_matches;
+                let temp = make_matches(
+                    players,
+                    ww,
+                    leftover,
+                    round_total, false, true
+                );
+
+                if (temp == "score_error") {
+                    //console.log("score error");
+                    //console.log(xx);
+                    win_list[Math.max(win_list.length - xx - 2, 0)].concat(
+                        win_list[win_list.length - xx - 1]
+                    );
+                    continue;
+                }
+
+                n_matches = temp.new_matches;
+                _leftover = temp.ll;
+
+                if (_leftover == null) {
+                    _leftover = [];
+                }
+
+                // Update new matches
+                matches.push(...n_matches);
+            }
+
+            let _failed = false;
+
+            for (let i = 0; i < matches.length; i++) {
+                let match = matches[i];
+                for (let m of players[match.white_index].matches) {
+                    if (m.opponent == match.black_index) {
+                        _failed = true;
+                    }
+                }
+
+                if (
+                    players[match.white_index].school == players[match.black_index].school
+                ) {
+                    _failed = true;
+                }
+            }
+
+            if (
+                matches.length >= Math.floor(Object.keys(players).length / 2) &&
+                !_failed
+            ) {
+                new_matches = matches;
+                leftover = _leftover;
+                break;
+            }
+
+            if (tries > ATTEMPT_AMOUNT) {
+                new_matches = matches;
+                leftover = _leftover;
+                failed = true;
+                break;
+            }
+        }
+    }
 
     if (
         new_matches.length < Math.floor(Object.keys(players).length / 2) ||
@@ -1439,13 +1546,13 @@ export function run_round(tournament_index) {
 
             //console.log(matches.length, Math.floor(Object.keys(players).length / 2), failed, _errors)
 
-            if (tries > 200000) {
+            if (tries > 400000) {
                 if (_errors <= 1) {
                     _failed = false;
                 }
             }
 
-            if (tries > 500000) {
+            if (tries > 700000) {
                 if (_errors <= 2) {
                     _failed = false;
                 }
@@ -1899,15 +2006,15 @@ function test_case_4() {
     console.log("Final scores", sort_wins(4, read_players_db(0)));
 }
 
-const ATTEMPT_AMOUNT = 10000;
+const ATTEMPT_AMOUNT = 100000;
 
-/*
-test_case_1();
-console.log("\n");
-test_case_2();
-console.log("\n");
-test_case_3();
-console.log("\n");
-test_case_4();
-*/
+
+//test_case_1();
+//console.log("\n");
+//test_case_2();
+//console.log("\n");
+//test_case_3();
+//console.log("\n");
+//test_case_4();
+
 /* end of testing */
