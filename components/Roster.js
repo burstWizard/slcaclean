@@ -1,13 +1,11 @@
 import { PlusCircleIcon, CheckIcon, XMarkIcon, PlusSmallIcon, TrashIcon } from "@heroicons/react/20/solid";
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useContext } from "react";
+import { matchSaved, checkMatchSaved } from './Pairing'
 
 export default function Roster({section}){
-
     const [roster, setRoster] = useState();
     const [newSchoolName, setNewSchoolName] = useState("");
     const [addNew, setAddNew] = useState(false);
-
     async function fetchRoster(){
         
         
@@ -59,36 +57,65 @@ export default function Roster({section}){
 
     }
 
-    
+    function displayRoster(){
+      return (
+      <div>
+              {roster && roster.map((schoolPack, index) => (
+                <SchoolDisplay
+                  schoolPack={schoolPack}
+                  key={index}
+                  addNewStudent={addNewStudent}
+                  deletePlayer={deletePlayer}
+                />
+              ))}
+              {roster && roster.length === 0 && (
+                <div>
+                  <p className="font-bold mb-2">No Schools Currently Added.</p>
+                </div>
+              )}
+              {addNew ? (
+                <div>
+                  <div className='flex items-center space-x-2'>
+                    <input
+                      value={newSchoolName}
+                      onChange={(e) => setNewSchoolName(e.target.value)}
+                      className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="username"
+                      type="text"
+                      placeholder="New School Name"
+                    />
+                    <button
+                      onClick={() => addNewSchool()}
+                      className="bg-green-500 hover:bg-green-700 text-white font-bold rounded"
+                    >
+                      <CheckIcon className='h-8 w-8' />
+                    </button>
+                    <button
+                      onClick={() => setAddNew(false)}
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold rounded"
+                    >
+                      <XMarkIcon className='h-8 w-8' />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  onClick={() => setAddNew(true)}
+                  className='flex items-center space-x-2 font-bold py-2 px-2 pmb-4 bg-purple-500 hover:bg-purple-700 text-white transition ease-in-out cursor-pointer max-w-fit'
+                >
+                  <PlusCircleIcon className='h-6 w-6 '/>
+                  <h1>Add New School</h1>
+                </div>
+              )}
+            </div>
+      )
+    }
     return(
-        <div>
-            {roster && roster.map((schoolPack, index)=>{
-                return(<SchoolDisplay schoolPack={schoolPack} key={index} addNewStudent={addNewStudent} deletePlayer={deletePlayer}/>)
-            })}
-            {roster && roster.length == 0 &&
-                <div>
-                    <p className="font-bold mb-2">No Schools Currently Added.</p>
-                </div>
-            }
-            {addNew ? 
-                <div>
-                    <div className='flex items-center space-x-2'>
-                        <input value = {newSchoolName} onChange = {(e)=>setNewSchoolName(e.target.value)} className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="New School Name" />
-                        <button onClick={()=>addNewSchool()} className="bg-green-500 hover:bg-green-700 text-white font-bold rounded">
-                            <CheckIcon className='h-8 w-8' />
-                        </button>
-                        <button onClick = {()=>setAddNew(false)} className="bg-red-500 hover:bg-red-700 text-white font-bold rounded">
-                            <XMarkIcon className='h-8 w-8' />
-                        </button>
-                    </div>
-                </div>
-                :
-                <div onClick={()=>setAddNew(true)} className='flex items-center space-x-2 font-bold py-2 px-2 pmb-4 bg-purple-500 hover:bg-purple-700 text-white transition ease-in-out cursor-pointer max-w-fit'>
-                    <PlusCircleIcon className='h-6 w-6 '/>
-                    <h1>Add New School</h1>
-                </div>
-            }
-        </div>
+      (matchSaved ? (
+        displayRoster()
+      ):(
+        <h1>Cannot add or delete players in the middle of a round. Save the round data before trying to add or delete players.</h1>
+      ))    
     )
 }
 

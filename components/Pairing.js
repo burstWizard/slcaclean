@@ -3,7 +3,10 @@ import { useState, useEffect } from "react";
 import { BoltIcon, CloudArrowUpIcon, HandRaisedIcon, ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import Select from "react-select";
 import Modal from "./modal";
-
+export let matchSaved = false;
+export function checkMatchSaved(){
+    matchSaved = false;
+}
 export default function Pairing({section}){
 
     const [roundInfo, setRoundInfo] = useState()
@@ -11,7 +14,7 @@ export default function Pairing({section}){
     const [matchData, setMatchData] = useState([])
     const [activeRoundLocked, setActiveRoundLocked] = useState()
     const [sync, setSync] = useState([])
-
+    const[matchesSaved,setMatchesSaved] = useState(false);
     //Fetch Rounds from the "Rounds" table.
     async function fetchRounds(){
         await fetch("/api/rounds?sectionId=" + section)
@@ -51,6 +54,7 @@ export default function Pairing({section}){
 
     //Whenever you hit this, it will hands-down fully create a new round.
     async function createNextRound(){
+        matchSaved = false;
         const res = await fetch("/api/final", {
             method: 'POST',
             headers: {
@@ -67,6 +71,8 @@ export default function Pairing({section}){
 
     //Update the match data for current round in the db.
     async function save(){
+        setMatchesSaved(true);
+        matchSaved = true;
         console.log('match data'+matchData)
         await fetch("/api/update", {
             method: 'POST',
@@ -77,6 +83,7 @@ export default function Pairing({section}){
         })
         fetchMatchData();
     }
+
     //delete the current round
 
     async function deleteRound(){
@@ -92,6 +99,7 @@ export default function Pairing({section}){
         console.log(data)
         fetchMatchData()
     }
+
     async function autoPair(){
         const res = await fetch("/api/auto?sectionId=" + section + "&roundId=" + activeRound);
         const data = await res.json();
@@ -134,7 +142,7 @@ export default function Pairing({section}){
                     {(matchData.length>0 && activeRoundLocked) && <LockedDisplayTable matches={matchData} section={section}/>}
 
                     {/* Controls for pairing, including auto, save, and finalize. */}
-                    {(!activeRoundLocked && matchData.length>0) && 
+                    {(matchData.length>0) && 
                         <div className="flex items-center space-x-2">
                             <button onClick={autoPair} className="flex space-x-2 items-center bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
                                 <BoltIcon className='h-5 w-5' />
@@ -144,19 +152,14 @@ export default function Pairing({section}){
                                 <CloudArrowUpIcon className="h-5 w-5" />
                                 <p>Save Matches</p>
                             </button>
-
                             <button onClick={deleteRound} className="flex space-x-2 items-center bg-red-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
                                 <p>Delete Current Round</p>
                             </button>
                             
-                            <Modal createNextRound={createNextRound} disabled = {!sync}/>
+                            <Modal createNextRound={createNextRound} disabled = {!sync} saved={matchesSaved}/>
                             
                         </div>
                     }
-
-                    {(activeRoundLocked && matchData.length>0) &&
-                    <p className="italic">Results are final & cannot be modified.</p>
-                    } 
 
                 </div>
             }
