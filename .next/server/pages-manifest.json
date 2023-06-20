@@ -3,7 +3,5 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/tournaments/[tournamentId]": "pages/tournaments/[tournamentId].js",
-  "/api/match": "pages/api/match.js",
-  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
-  "/api/auto": "pages/api/auto.js"
+  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js"
 }

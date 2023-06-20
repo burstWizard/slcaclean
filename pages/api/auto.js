@@ -96,6 +96,13 @@ export default async function handler(req, res) {
 
         for (const match of matchData) {
             pairing.insert_match(0, match.round.num, match.whiteId, match.blackId);
+            console.log(match.blackId);
+
+            if (match.blackId == null) {
+                pairing.update_match_bye(pairing.match_register_id - 1);
+                continue;
+            }
+
             if (match.result == 0) {
                 pairing.update_match(pairing.match_register_id - 1, match.blackId, match.whiteId);
             }
