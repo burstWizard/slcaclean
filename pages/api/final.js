@@ -25,11 +25,7 @@ export default async function handler(req, res) {
         
         let newRoundNum = 1;
         
-
-        //If previous rounds exist!
-        if(!(typeof req.body.roundId == 'undefined')){
-
-            //Lock the previous round.
+        if (req.body.setting=='lock'){
             const latestRound = await prisma.round.update({
                 where:{
                     id: req.body.roundId,
@@ -38,18 +34,13 @@ export default async function handler(req, res) {
                     locked: true
                 }
             })
-
-            //Updating player records
-
-            //First, obtain what actually happened in the round.
             const results = await prisma.match.findMany({
                 where:{
                     roundId: req.body.roundId
                 }
             });
-
             for(const result of results){
-
+                console.log(result,'resulttt')
                 if(result.whiteId){
                     //Update the white players score.
                     await prisma.player.update({
@@ -75,7 +66,53 @@ export default async function handler(req, res) {
                 }
                 
             }
-            newRoundNum = latestRound.num+1
+            res.status(200).json({message:'success'})
+        }
+        else {
+        //If previous rounds exist!
+        if(!(typeof req.body.roundId == 'undefined')){
+
+            //Lock the previous round.
+            
+            //Updating player records
+
+            //First, obtain what actually happened in the round.
+            
+            /*const results = await prisma.match.findMany({
+                where:{
+                    roundId: req.body.roundId
+                }
+            });*/
+            /*for(const result of results){
+
+                if(result.whiteId){
+                    //Update the white players score.
+                    await prisma.player.update({
+                        where:{
+                            id: result.whiteId
+                        },
+                        data:{
+                            record: {increment: result.result}
+                        }
+                    });
+                }
+
+                //Update the black players score.
+                if(result.blackId){
+                    await prisma.player.update({
+                        where:{
+                            id: result.blackId
+                        },
+                        data:{
+                            record: {increment: (10-(result.result))}
+                        }
+                    })
+                }
+                
+            }*/
+            console.log(req.body.rounds,'roundsss')
+            newRoundNum = req.body.rounds+1
+
         }
 
         //Now, functions occur regardless of whether this is the first round or not.
@@ -95,6 +132,7 @@ export default async function handler(req, res) {
         console.log("hello! function done!")
 
         res.status(200).json({message: newRound.id});
+    }
     }
     else{
         res.status(200).json({ message: "This doesn't do anything!"});

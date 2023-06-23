@@ -25,6 +25,15 @@ export default async function handler(req, res) {
         })
         res.status(200).json({message: "Success!"});
     }
+    if (req.method=='DELETE'){
+        console.log('idddddddd',req.body.name)
+        const section = await prisma.section.delete({
+            where: {
+                id:req.body.name,
+            },
+        })
+        res.status(200).json({message: "Success!"});
+    }
     else{
         //Get list of sections
 

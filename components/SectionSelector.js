@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, PlusCircleIcon, CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { ArrowLeftIcon, PlusCircleIcon, CheckIcon, XMarkIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { useState, useEffect } from "react";
 import Select from 'react-select'
 
@@ -31,7 +31,16 @@ export default function SectionSelector({activeTourney, activeSection, setActive
     }, [])
 
     
-
+    async function deleteSection(){
+        await fetch('/api/sections',{
+            method:'DELETE',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body:JSON.stringify({name:activeSection.value,tournamentId:activeTourney})
+        })
+        fetchSections();
+    }
     async function addNewSection(){
         // Add new section using newSectionName and regerence active Tourney
         // Request the list of sections
@@ -71,6 +80,11 @@ export default function SectionSelector({activeTourney, activeSection, setActive
 
             {(sections && !addNew) &&
                 <div className="flex items-center">
+                    {sections.length > 0 && 
+                    <div>
+                    <h1 style={{marginLeft:20,font:'Monserrat'}}>Delete Current Section:</h1>
+                    <TrashIcon style={{width:20,height:20,marginLeft:10}} onClick={deleteSection}/>
+                    </div>}
                     <div onClick={()=>setAddNew(true)} className='flex items-center space-x-2 font-bold  py-2 px-2 pmb-4 bg-purple-500 hover:bg-purple-700 text-white transition ease-in-out cursor-pointer '>
                         <PlusCircleIcon className='h-6 w-6 '/>
                         <h1>Create New Section</h1>

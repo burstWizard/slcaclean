@@ -43,23 +43,41 @@ export default async function handler(req, res) {
             //handle school addition
             const school = await prisma.school.create({
                 data:{
-                    name: req.body.school,
+                    id: req.body.school,
+                    name:req.body.school,
                     sectionId: req.body.sectionId
                 }
             })
         }
-        res.status(200).json({message: "Hello"});
+        //res.status(200).json({message: "Hello"});
     }
     if (req.method=='DELETE'){
-        const user = await prisma.player.findMany()
-        console.log(user[0].name+'userrrrrrrrrrrrrrr')
-        const deletePlayer = await prisma.player.delete({
-            where:{
-                id:req.body.id,
-            },
-        })
-        console.log(deletePlayer)
-        res.status(200).json({message: "Hello"});
+        if (req.body.setting=='player'){
+            const deletePlayer = await prisma.player.delete({
+                where:{
+                    id:req.body.id,
+                },
+            })
+            console.log(deletePlayer)
+            res.status(200).json({message: "Hello"});
+        }
+
+        else{
+            const schools = await prisma.school.findMany()
+            console.log('schools',schools)
+            const school = await prisma.school.findUnique({
+                where:{
+                    id:req.body.id,
+                },
+            })
+            console.log('schoool',school)
+            const deleteSchool = await prisma.school.delete({
+                where: {
+                    id:req.body.id,
+                },
+            })
+            res.status(200).json({message:'Hello'})
+        }
     }
     else{
         
