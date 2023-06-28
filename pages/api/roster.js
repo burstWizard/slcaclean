@@ -13,77 +13,77 @@ export default async function handler(req, res) {
 
     const user = await prisma.user.findUnique({
         where: {
-          email: session.user.email,
+            email: session.user.email,
         },
     })
-    if(req.method == "POST"){
+    if (req.method == "POST") {
         //Handle both adding students and adding schools
         console.log(req.body.setting)
         const tournaments = await prisma.section.findMany();
         const rounds = await prisma.round.findMany({
-            where:{
+            where: {
                 sectionId: req.body.sectionId
             }
         })
-        if(req.body.setting == "student"){
+        if (req.body.setting == "student") {
             console.log("Trello")
             //handle student addition
             const player = await prisma.player.create({
-                data:{
+                data: {
                     id: req.body.student,
                     schoolId: req.body.schoolId,
                     sectionId: req.body.sectionId,
-                    name:req.body.student,
-                    record:5*rounds.length
+                    name: req.body.student,
+                    record: 5 * rounds.length
                 }
             })
         }
-        else{
+        else {
             console.log("shit man")
             //handle school addition
             const school = await prisma.school.create({
-                data:{
-                    id: req.body.school,
-                    name:req.body.school,
+                data: {
+                    id: req.body.school + req.body.sectionId,
+                    name: req.body.school,
                     sectionId: req.body.sectionId
                 }
             })
         }
         //res.status(200).json({message: "Hello"});
     }
-    if (req.method=='DELETE'){
-        if (req.body.setting=='player'){
+    if (req.method == 'DELETE') {
+        if (req.body.setting == 'player') {
             const deletePlayer = await prisma.player.delete({
-                where:{
-                    id:req.body.id,
+                where: {
+                    id: req.body.id,
                 },
             })
             console.log(deletePlayer)
-            res.status(200).json({message: "Hello"});
+            res.status(200).json({ message: "Hello" });
         }
 
-        else{
+        else {
             const schools = await prisma.school.findMany()
-            console.log('schools',schools)
+            console.log('schools', schools)
             const school = await prisma.school.findUnique({
-                where:{
-                    id:req.body.id,
+                where: {
+                    id: req.body.id,
                 },
             })
-            console.log('schoool',school)
+            console.log('schoool', school)
             const deleteSchool = await prisma.school.delete({
                 where: {
-                    id:req.body.id,
+                    id: req.body.id,
                 },
             })
-            res.status(200).json({message:'Hello'})
+            res.status(200).json({ message: 'Hello' })
         }
     }
-    else{
-        
+    else {
+
         //Build the list of schools and players by first getting all schools involved with section then getting each student involved with school
         const schools = await prisma.school.findMany({
-            where:{
+            where: {
                 sectionId: req.query.sectionId
             }
         })
@@ -93,7 +93,7 @@ export default async function handler(req, res) {
         for (const element of schools) {
             const players = await prisma.player.findMany({
                 where: {
-                schoolId: element.id,
+                    schoolId: element.id,
                 },
             });
             await temp.push([element, players]);

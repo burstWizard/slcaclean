@@ -13,37 +13,38 @@ export default async function handler(req, res) {
 
     const user = await prisma.user.findUnique({
         where: {
-          email: session.user.email,
+            email: session.user.email,
         },
     })
-    if(req.method == "POST"){
+    if (req.method == "POST") {
         const section = await prisma.section.create({
-            data:{
+            data: {
                 name: req.body.name,
                 tournamentId: req.body.tournamentId
             }
         })
-        res.status(200).json({message: "Success!"});
+
+        res.status(200).json({ message: "Success!" });
     }
-    if (req.method=='DELETE'){
-        console.log('idddddddd',req.body.name)
+    if (req.method == 'DELETE') {
+        console.log('idddddddd', req.body.name)
         const section = await prisma.section.delete({
             where: {
-                id:req.body.name,
+                id: req.body.name,
             },
         })
-        res.status(200).json({message: "Success!"});
+        res.status(200).json({ message: "Success!" });
     }
-    else{
+    else {
         //Get list of sections
 
         const sections = await prisma.section.findMany({
-            where:{
+            where: {
                 tournamentId: req.query.tournamentId
             }
         });
         console.log(sections)
-        
-        res.status(200).json({sectionList: sections});
+
+        res.status(200).json({ sectionList: sections });
     }
 }
