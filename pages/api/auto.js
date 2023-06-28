@@ -155,7 +155,12 @@ export default async function handler(req, res) {
             })
         }
 
+        if (typeof bye_player != "string" && bye_player.length == 0) {
+            bye_player = null;
+        }
+
         if (bye_player) {
+            console.log("There is a bye player", bye_player);
             await prisma.match.update({
                 where: {
                     id: currMatches[currMatches.length - 1].id,

@@ -2,8 +2,7 @@
 
 datasource db {
   provider="postgresql"
-  url= "postgres://ctqjahexjboizv:4f58a55547795bfc201d3a5c95266336cd26f9387038a06227e34799e967c541@ec2-52-207-90-231.compute-1.amazonaws.com:5432/dbj1f10v6gk87t"
-  shadowDatabaseUrl ="postgres://ezthlggjzgamji:edf5061360b4db3345be711f98bf906d74b293905f0cbbeb2e81f9e1e2acea0f@ec2-3-229-252-6.compute-1.amazonaws.com:5432/d56d5lephj4c1o"// Only needed when using a cloud provider that doesn't support the creation of new databases, like Heroku. Learn more: https://pris.ly/migrate-shadow
+  url= "postgresql://aniruth:4Fhl11mIIrXWBlKHo6I2ig@safe-buffalo-11001.5xj.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full"
 }
 
 generator client {
