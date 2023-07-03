@@ -1651,7 +1651,11 @@ export function run_round(tournament_index) {
                 }
             }
 
-            if (leftover) {
+            if (typeof _leftover == "string" || _leftover.length != 0) {
+                if (_leftover.length != 0) {
+                    _leftover = _leftover[0];
+                }
+                //console.log(_leftover, players);
                 _errors += players[_leftover].score * BYE_SCORE_PENALTY; // 2
 
                 if (players[_leftover].record.bye > 0) {
@@ -2276,16 +2280,18 @@ function test_case_6() {
     console.log("Final scores", sort_wins(4, read_players_db(0)));
 }
 
-let ATTEMPT_AMOUNT = 100000;
+let ATTEMPT_AMOUNT = 1000000;
 
-//test_case_1();
-//console.log('\n\n\n\n')
-//test_case_2();
-//console.log('\n\n\n\n')
-//test_case_3();
-//test_case_4();
-//test_case_5();
-//test_case_6();
+if (process.argv[1].includes("pairing.mjs")) {
+    test_case_1();
+    console.log('\n\n\n\n')
+    test_case_2();
+    console.log('\n\n\n\n')
+    test_case_3();
+    //test_case_4();
+    //test_case_5();
+    //test_case_6();
+}
 
 
 /* end of testing */

@@ -2,9 +2,7 @@ import prisma from "../../lib/prisma"
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]"
 
-const hello = require('swiss-pairing')();
-
-const pairing = require('./pairing');
+const pairing = require('./pairing.mjs');
 
 export default async function handler(req, res) {
 
