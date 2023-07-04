@@ -7,7 +7,7 @@ export let matchSaved = true;
 export function checkMatchSaved() {
     matchSaved = false;
 }
-export default function Pairing({ section }) {
+export default function Pairing({ section, generatedRounds, setGeneratedRounds }) {
 
     const [roundInfo, setRoundInfo] = useState()
     const [activeRound, setActiveRound] = useState()
@@ -22,8 +22,12 @@ export default function Pairing({ section }) {
             .then((data) => {
                 setRoundInfo(data.rounds)
 
+                console.log(data.rounds)
+
                 if (data.rounds.length > 0) {
-                    console.log(data.rounds)
+                    console.log("data.round", data.rounds)
+                    console.log(data.rounds.length - 2);
+                    setGeneratedRounds(data.rounds.length - 2)
                     setActiveRound(data.rounds[data.rounds.length - 1].id)
                     setActiveRoundLocked(data.rounds[data.rounds.length - 1].locked)
                 }
@@ -66,6 +70,8 @@ export default function Pairing({ section }) {
         fetchRounds();
         setActiveRound(data.message)
         fetchMatchData();
+        console.log(roundInfo)
+        //setGeneratedRounds(roundInfo + 1);
 
     }
 
@@ -79,25 +85,44 @@ export default function Pairing({ section }) {
                 body: JSON.stringify({ sectionId: section, roundId: activeRound, setting: 'lock' })
             })
             fetchRounds()
+            alert("Locked round!")
         }
         else {
-            alert('matches not saved yet!')
+            alert('Oh no! You haven\' saved your matches!')
         }
 
     }
 
     //Update the match data for current round in the db.
     async function save() {
-        setMatchesSaved(true);
-        matchSaved = true;
-        console.log('match data' + matchData)
-        await fetch("/api/update", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ matchData: matchData }),
-        })
+        console.log(matchData);
+
+        let unfinished = false;
+
+        for (let match of matchData) {
+            if (match.result == null) {
+                //console.log(match.result, match.result != 10 || match.result != 0 || match.result != 5)
+                unfinished = true;
+            }
+        }
+
+        if (unfinished) {
+            alert("Oh no! It looks like all your matches don't have results! Unable to save matches :(")
+        } else {
+
+            setMatchesSaved(true);
+            matchSaved = true;
+            //console.log('match data' + matchData)
+            await fetch("/api/update", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ matchData: matchData }),
+            })
+
+            alert("Yay! Saved matches!");
+        }
     }
 
     //delete the current round
@@ -126,6 +151,7 @@ export default function Pairing({ section }) {
         fetchMatchData()
     }
     useEffect(() => console.log(activeRound + " " + activeRoundLocked), [activeRoundLocked])
+
 
     return (
         <div>
@@ -176,17 +202,17 @@ export default function Pairing({ section }) {
                                 <p>Delete Current Round</p>
                             </button>
 
-                            <button onClick={lockRound} className="flex space-x-2 items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                            {matchSaved && <button onClick={lockRound} className="flex space-x-2 items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                                 <LockClosedIcon className="h-5 w-5" />
                                 <p>Lock Current Round</p>
-                            </button>
+                            </button>}
 
                         </div>
                     }
                     {(activeRoundLocked && matchData.length > 0) &&
                         <div>
-                            <p className="italic">Results are final & cannot be modified.</p>
-                            <Modal createNextRound={createNextRound} disabled={!sync} saved={true} text={'Generate Next Round'} />
+                            <p className="italic" onLoad={console.log("Latest round", roundInfo.indexOf(roundInfo.find(e => e.id == activeRound)))}>Results are final & cannot be modified.</p>
+                            {generatedRounds < roundInfo.indexOf(roundInfo.find(e => e.id == activeRound)) && <Modal createNextRound={createNextRound} disabled={!sync} saved={true} text={'Generate Next Round'} />}
                         </div>
                     }
 

@@ -82,8 +82,7 @@ export default function Roster({ section }) {
         }} />
         {schoolPack[1].map((student, index) =>
           <div style={{ display: 'flex', marginLeft: 20 }}>
-            <p key={index}>{student.name.split(" ")[0]}</p>
-            <p style={{ display: "inline", marginLeft: 3 }} className="" key={index}>{student.name.split(" ")[1]}</p>
+            <p key={index}>{student.name}</p>
             <TrashIcon style={{ width: 16, height: 16, display: "inline", marginLeft: 5, marginTop: 4, color: "red" }} onClick={() => {
               deletePlayer(student.name, student.id)
             }} />
@@ -91,7 +90,15 @@ export default function Roster({ section }) {
         )}
         {addNew ?
           <div className='flex items-center space-x-2'>
-            <input value={newStudentName} onChange={(e) => setNewStudentName(e.target.value)} className="my-1 appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Player Name" />
+            <input value={newStudentName}
+              autoFocus={true}
+              onKeyDown={(e) => {
+                if (e.code == "Enter") {
+                  addNewStudent(newStudentName, schoolPack[0]);
+                  setNewStudentName("");
+                  setAddNew(false)
+                }
+              }} onChange={(e) => { setNewStudentName(e.target.value) }} className="my-1 appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Player Name" />
             <button onClick={() => {
               addNewStudent(newStudentName, schoolPack[0]);
               setNewStudentName("");
@@ -105,7 +112,11 @@ export default function Roster({ section }) {
             </button>
           </div>
           :
-          <div style={{ marginLeft: 10, }} onClick={() => setAddNew(true)} className='flex items-center hover:bg-purple-200 underline rounded max-w-fit cursor-pointer transition ease-in-out'>
+          <div style={{ marginLeft: 10, }} onKeyDown={(e) => {
+            if (e.code == "Enter" && !addNew) {
+              setAddNew(true)
+            }
+          }} onClick={() => setAddNew(true)} className='flex items-center hover:bg-purple-200 underline rounded max-w-fit cursor-pointer transition ease-in-out'>
             <PlusSmallIcon className='h-5 w-5' style={{ marginLeft: 5 }} />
             <p className='' style={{ marginRight: 10 }}>New Player</p>
           </div>
@@ -134,12 +145,19 @@ export default function Roster({ section }) {
           <div>
             <div className='flex items-center space-x-2'>
               <input
+                autoFocus={true}
                 value={newSchoolName}
                 onChange={(e) => setNewSchoolName(e.target.value)}
                 className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="username"
                 type="text"
                 placeholder="New School Name"
+
+                onKeyDown={(e) => {
+                  if (e.code == "Enter") {
+                    addNewSchool();
+                  }
+                }}
               />
               <button
                 onClick={() => addNewSchool()}

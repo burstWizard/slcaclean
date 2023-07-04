@@ -4,7 +4,6 @@ import Select from 'react-select'
 
 
 export default function SectionSelector({ activeTourney, activeSection, setActiveSection }) {
-
     const [sections, setSections] = useState();
 
     const [addNew, setAddNew] = useState(false);
@@ -20,7 +19,7 @@ export default function SectionSelector({ activeTourney, activeSection, setActiv
             temp.push({ value: element.id, label: element.name })
         }
         setSections(temp)
-        setActiveSection(temp[0])
+        setActiveSection(temp[temp.length - 1])
     }
 
     useEffect(() => {
@@ -32,6 +31,7 @@ export default function SectionSelector({ activeTourney, activeSection, setActiv
 
 
     async function deleteSection() {
+
         await fetch('/api/sections', {
             method: 'DELETE',
             headers: {
@@ -61,13 +61,23 @@ export default function SectionSelector({ activeTourney, activeSection, setActiv
         <div className='flex items-center space-x-2'>
 
             {sections && <h1 className='font-bold  rounded-lg'>Section:</h1>}
-            {sections && <Select options={sections} value={activeSection} onChange={setActiveSection} className="w-40" />}
+            {sections && <Select options={sections} value={sections.length > 0 ? activeSection : "..."} onChange={setActiveSection} className="w-40" />}
 
             {(sections && addNew) &&
                 <div>
                     <div className='flex items-center space-x-2'>
-                        <input value={newSectionName} onChange={(e) => setNewSectionName(e.target.value)} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="New Section Name" />
-                        <button onClick={() => addNewSection()} className="bg-green-500 hover:bg-green-700 text-white font-bold rounded">
+                        <input value={newSectionName} onKeyDown={(e) => {
+                            if (e.key == "Enter") {
+                                addNewSection()
+                                setNewSectionName("")
+                                alert("Created new section \"" + newSectionName + "\"")
+                            }
+                        }} onChange={(e) => setNewSectionName(e.target.value)} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="New Section Name" />
+                        <button onClick={() => {
+                            addNewSection()
+                            setNewSectionName("")
+                            alert("Created new section \"" + newSectionName + "\"")
+                        }} className="bg-green-500 hover:bg-green-700 text-white font-bold rounded">
                             <CheckIcon className='h-8 w-8' />
                         </button>
                         <button onClick={() => setAddNew(false)} className="bg-red-500 hover:bg-red-700 text-white font-bold  rounded">
@@ -81,11 +91,16 @@ export default function SectionSelector({ activeTourney, activeSection, setActiv
             {(sections && !addNew) &&
                 <div className="flex items-center">
                     {sections.length > 0 &&
-                        <div onClick={deleteSection} style={{ marginRight: 20 }} className='rounded flex items-center space-x-2 font-bold py-2 px-2 pmb-4 bg-red-500 hover:bg-purple-700 text-white transition ease-in-out cursor-pointer '>
+                        <div onClick={deleteSection} style={{ marginRight: 20 }} className='rounded flex items-center space-x-2 font-bold py-2 px-2 pmb-4 bg-red-500 hover:bg-red-700 text-white transition ease-in-out cursor-pointer '>
                             <TrashIcon style={{ width: 18, height: 18 }} />
                             <h1 style={{ marginLeft: 5, font: 'Monserrat', marginRight: 5 }}>Delete Current Section</h1>
                         </div>}
-                    <div onClick={() => setAddNew(true)} className='rounded flex items-center space-x-2 font-bold  py-2 px-2 pmb-4 bg-purple-500 hover:bg-purple-700 text-white transition ease-in-out cursor-pointer '>
+                    <div
+                        onClick={(e) => {
+                            e.target.style.visibility = "hidden";
+                            setAddNew(true)
+                            e.target.style.visibility = "display";
+                        }} className='rounded flex items-center space-x-2 font-bold  py-2 px-2 pmb-4 bg-purple-500 hover:bg-purple-700 text-white transition ease-in-out cursor-pointer '>
                         <PlusCircleIcon className='h-6 w-6 ' />
                         <h1>Create New Section</h1>
                     </div>

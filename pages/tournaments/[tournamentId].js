@@ -16,8 +16,9 @@ const Tournament = () => {
 
     const [selSection, setSelSection] = useState();
     const [focus, setFocus] = useState("roster")
-    
-    return(
+    const [generatedRounds, setGeneratedRounds] = useState();
+
+    return (
         <div>
             <Head>
                 <title>SLCA - Tournament System</title>
@@ -25,22 +26,22 @@ const Tournament = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <Navigation tab = "tournaments" />
+            <Navigation tab="tournaments" />
 
             <div className='grid grid-cols-4 mt-4 mx-4'>
-                <TournamentList active = {tournamentId} />
-                
+                <TournamentList active={tournamentId} />
+
                 {/* Only load when tournamentId loads */}
-                {tournamentId && 
+                {tournamentId &&
                     <div className={`col-span-3 px-4`} >
-                        <SectionSelector activeTourney = {tournamentId} activeSection={selSection} setActiveSection={setSelSection}/>
-                        <hr className='my-2'/>
-                        
-                        {selSection && <TabBar focus = {focus} setFocus={setFocus} />}
-                        <hr className="my-2"/>
-                        
-                        {((focus == "roster")    && (selSection)) && <Roster section={selSection.value} />}
-                        {((focus == "pairing")   && (selSection)) && <Pairing section={selSection.value}/>}
+                        <SectionSelector activeTourney={tournamentId} activeSection={selSection} setActiveSection={setSelSection} />
+                        <hr className='my-2' />
+
+                        {selSection && <TabBar focus={focus} setFocus={setFocus} />}
+                        <hr className="my-2" />
+
+                        {((focus == "roster") && (selSection)) && <Roster section={selSection.value} />}
+                        {((focus == "pairing") && (selSection)) && <Pairing section={selSection.value} generatedRounds={generatedRounds} setGeneratedRounds={setGeneratedRounds} />}
                         {((focus == "standings") && (selSection)) && <Standings section={selSection.value} />}
                     </div>
                 }
