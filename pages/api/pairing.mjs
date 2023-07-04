@@ -24,7 +24,7 @@ console.log('\n\n\n\n\n\n')
 */
 
 const BYE_SCORE_PENALTY = 8; // Multiplies based on player's score
-const POINT_DIFFERENCE_PENALTY = 0.1; // Multiplies by the score difference between players
+const POINT_DIFFERENCE_PENALTY = 0.4; // Multiplies by the score difference between players
 const SAME_SCHOOL_PENALTY = 32;
 const REPEAT_MATCH_PENALTY = 150;
 const REPEAT_BYE_PENALTY = 100;
@@ -2240,7 +2240,7 @@ function test_case_6() {
     //console.log("Final scores", sort_wins(4, read_players_db(0)));
 }
 
-let ATTEMPT_AMOUNT = 10000;
+let ATTEMPT_AMOUNT = 500000;
 
 if (process.argv[1].includes("pairing.mjs")) {
     test_case_1();
