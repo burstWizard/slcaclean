@@ -1,8 +1,6 @@
-
-
 datasource db {
-  provider="postgresql"
-  url= "postgresql://aniruth:4Fhl11mIIrXWBlKHo6I2ig@safe-buffalo-11001.5xj.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full"
+  provider = "postgresql"
+  url      = "postgresql://aniruth:syljNYpZOQ5DuIQ766tB-g@babied-swan-4376.g8z.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full"
 }
 
 generator client {
@@ -10,18 +8,18 @@ generator client {
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -37,9 +35,9 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -56,63 +54,61 @@ model VerificationToken {
 }
 
 model Tournament {
-  id         String   @id @default(cuid())
-  name       String
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sections   Section[]
+  id       String    @id @default(cuid())
+  name     String
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sections Section[]
 }
 
 model Section {
-  id           String    @id @default(cuid())
+  id           String     @id @default(cuid())
   name         String
   tournamentId String
   tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   schools      School[]
   players      Player[]
   rounds       Round[]
-
 }
 
 model School {
-  id           String    @id @default(cuid())
-  name         String
-  sectionId    String
-  section      Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  players      Player[]
+  id        String   @id @default(cuid())
+  name      String
+  sectionId String
+  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  players   Player[]
 }
 
 model Player {
-  id           String    @id @default(cuid())
-  name         String    @unique
+  id           String   @id @default(cuid())
+  name         String
   sectionId    String
-  section      Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  section      Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   schoolId     String
-  school       School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  record       Int    @default(0)
-  colorHistory String[] 
-  whiteMatches Match[] @relation("White")
-  blackMatches Match[] @relation("Black")       
+  school       School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  record       Int      @default(0)
+  colorHistory String[]
+  whiteMatches Match[]  @relation("White")
+  blackMatches Match[]  @relation("Black")
 }
 
 model Round {
-  id           String    @id @default(cuid())
-  num          Int
-  sectionId    String
-  section      Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  locked       Boolean
-  matches      Match[]
+  id        String  @id @default(cuid())
+  num       Int
+  sectionId String
+  section   Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  locked    Boolean
+  matches   Match[]
 }
 
-model Match{
-  id           String    @id @default(cuid())
-  board        Int?
-  roundId      String
-  round        Round     @relation(fields: [roundId], references: [id], onDelete: Cascade)
-  whiteId      String?
-  blackId      String?
-  white        Player? @relation("White", fields: [whiteId], references: [id])
-  black        Player? @relation("Black", fields: [blackId], references: [id])
-  result       Int?
+model Match {
+  id      String  @id @default(cuid())
+  board   Int?
+  roundId String
+  round   Round   @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  whiteId String?
+  blackId String?
+  white   Player? @relation("White", fields: [whiteId], references: [id])
+  black   Player? @relation("Black", fields: [blackId], references: [id])
+  result  Int?
 }
-

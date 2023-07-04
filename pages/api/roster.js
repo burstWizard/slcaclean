@@ -30,7 +30,7 @@ export default async function handler(req, res) {
             //handle student addition
             const player = await prisma.player.create({
                 data: {
-                    id: req.body.student,
+                    id: req.body.student + req.body.sectionId,
                     schoolId: req.body.schoolId,
                     sectionId: req.body.sectionId,
                     name: req.body.student,
