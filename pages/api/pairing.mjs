@@ -1242,15 +1242,12 @@ export function run_round(tournament_index) {
 
     console.log("Attempts:", tries);
 
-    /*
-    console.log("Color disregard pairing?", failed);
-
     if (
         new_matches.length < Math.floor(Object.keys(players).length / 2) ||
         failed
     ) {
         failed = false;
-        console.log("Not accounting for score now");
+        console.log("Not accounting for color now");
         let tries = 0;
         while (true) {
             //console.log("Full pairing attempt:", tries);
@@ -1272,6 +1269,7 @@ export function run_round(tournament_index) {
                     ww.splice(ww.indexOf([]), 1);
                 }
 
+                // If we have a leftover, add it to the current section so it rolls over
                 while (_leftover.length > 1) {
                     if (ww.indexOf(_leftover[_leftover.length - 1]) == -1) {
                         ww.push(_leftover.pop());
@@ -1294,16 +1292,6 @@ export function run_round(tournament_index) {
                     true,
                     false
                 );
-
-                if (temp == "score_error") {
-                    //console.log("score error");
-                    //console.log(xx);
-                    win_list[Math.max(win_list.length - xx - 2, 0)].concat(
-                        win_list[win_list.length - xx - 1]
-                    );
-                    continue;
-                }
-
                 n_matches = temp.new_matches;
                 _leftover = temp.ll;
 
@@ -1338,6 +1326,7 @@ export function run_round(tournament_index) {
             ) {
                 new_matches = matches;
                 leftover = _leftover;
+                failed = false;
                 break;
             }
 
@@ -1456,7 +1445,7 @@ export function run_round(tournament_index) {
                 break;
             }
         }
-    }*/
+    }
 
     if (
         new_matches.length < Math.floor(Object.keys(players).length / 2) ||
