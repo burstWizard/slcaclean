@@ -166,6 +166,7 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
         console.log(data)
         fetchMatchData()
         document.getElementById("autopairLabel").innerText = "Auto-Pair Round"
+        alert("Successfully paired!")
     }
     useEffect(() => console.log(activeRound + " " + activeRoundLocked), [activeRoundLocked])
 
@@ -228,8 +229,11 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
                     }
                     {(activeRoundLocked && matchData.length > 0) &&
                         <div>
+                            {generatedRounds < roundInfo.indexOf(roundInfo.find(e => e.id == activeRound)) && (
+                                <Modal createNextRound={createNextRound} disabled={!sync} saved={true} text={'Generate Next Round'} />
+                            )}
+                            <br></br>
                             <p className="italic" onLoad={console.log("Latest round", roundInfo.indexOf(roundInfo.find(e => e.id == activeRound)))}>Results are final & cannot be modified.</p>
-                            {generatedRounds < roundInfo.indexOf(roundInfo.find(e => e.id == activeRound)) && <Modal createNextRound={createNextRound} disabled={!sync} saved={true} text={'Generate Next Round'} />}
                         </div>
                     }
 

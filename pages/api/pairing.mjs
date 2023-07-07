@@ -1159,7 +1159,7 @@ export function run_round(tournament_index) {
     console.log("Starting matching process");
     console.log(sort_wins(current_round, players));
 
-    while (tries < ATTEMPT_AMOUNT * 10) {
+    while (tries < 10000) {
         //console.log("Full pairing attempt:", tries);
         tries++;
 
@@ -1228,7 +1228,7 @@ export function run_round(tournament_index) {
             if (
                 players[match.white_index].school == players[match.black_index].school
             ) {
-                _failed = true;
+                failed = true;
             }
         }
 
@@ -1330,7 +1330,7 @@ export function run_round(tournament_index) {
                 break;
             }
 
-            if (tries > ATTEMPT_AMOUNT) {
+            if (tries > 10000) {
                 new_matches = matches;
                 leftover = _leftover;
                 failed = true;
@@ -1351,7 +1351,7 @@ export function run_round(tournament_index) {
         let optimal_matches = [];
         let error = Infinity;
 
-        while (tries < ATTEMPT_AMOUNT / 2) {
+        while (tries < 10000) {
             //console.log("Full pairing attempt:", tries);
             tries++;
 
@@ -1457,6 +1457,7 @@ export function run_round(tournament_index) {
         let best_matches = [];
         let best_leftover = null;
         let match_hashes = []; // List of all premade match_hashes
+        let start = Date.now();
 
         while (true) {
             if (tries % ATTEMPT_AMOUNT == 0) console.log("Full pairing attempt:", tries);
@@ -1596,7 +1597,11 @@ export function run_round(tournament_index) {
 
             //console.log(tries, ATTEMPT_AMOUNT)
 
-            if ((tries > 5 * ATTEMPT_AMOUNT) || (min_errors <= 0.16 && !_failed && tries > (3 * ATTEMPT_AMOUNT))) {
+            if ((Date.now() - start >= 15000) || (tries > 5 * ATTEMPT_AMOUNT) || (min_errors <= 0.16 && !_failed && tries > (3 * ATTEMPT_AMOUNT))) {
+                if (Date.now() - start >= 15000) {
+                    console.log("Broke out because of time")
+                }
+
                 console.log("BREAKING OUT AT");
                 //console.log(best_matches);
                 new_matches = best_matches;
