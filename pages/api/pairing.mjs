@@ -1597,8 +1597,8 @@ export function run_round(tournament_index) {
 
             //console.log(tries, ATTEMPT_AMOUNT)
 
-            if ((Date.now() - start >= 7000) || (tries > 5 * ATTEMPT_AMOUNT) || (min_errors <= 0.16 && !_failed && tries > (2.5 * ATTEMPT_AMOUNT))) {
-                if (Date.now() - start >= 7000) {
+            if ((Date.now() - start >= 6000) || (tries > 5 * ATTEMPT_AMOUNT) || (min_errors <= 0.16 && !_failed && tries > (2.5 * ATTEMPT_AMOUNT))) {
+                if (Date.now() - start >= 6000) {
                     console.log("Broke out because of time")
                 }
 

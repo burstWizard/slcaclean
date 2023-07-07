@@ -161,12 +161,17 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
     async function autoPair(target) {
         console.log("Starting to autopair")
         document.getElementById("autopairLabel").innerText = "Loading..."
-        const res = await fetch("/api/auto?sectionId=" + section + "&roundId=" + activeRound);
-        const data = await res.json();
-        console.log(data)
-        fetchMatchData()
+        try {
+            const res = await fetch("/api/auto?sectionId=" + section + "&roundId=" + activeRound);
+            const data = await res.json();
+            console.log(data)
+            fetchMatchData()
+            alert("Successfully paired!")
+        } catch {
+            alert("There was an error")
+        }
         document.getElementById("autopairLabel").innerText = "Auto-Pair Round"
-        alert("Successfully paired!")
+
     }
     useEffect(() => console.log(activeRound + " " + activeRoundLocked), [activeRoundLocked])
 
