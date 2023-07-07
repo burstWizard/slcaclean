@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/router'
 
 import { BoltIcon, CloudArrowUpIcon, HandRaisedIcon, ArrowRightCircleIcon, LockClosedIcon, TrashIcon } from "@heroicons/react/20/solid";
 import Select from "react-select";
@@ -15,6 +16,8 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
     const [activeRoundLocked, setActiveRoundLocked] = useState()
     const [sync, setSync] = useState([])
     const [matchesSaved, setMatchesSaved] = useState(false);
+    const router = useRouter();
+
     //Fetch Rounds from the "Rounds" table.
     async function fetchRounds() {
         await fetch("/api/rounds?sectionId=" + section)
@@ -139,9 +142,20 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
             body: JSON.stringify({ matchData: matchData })
         })
 
+        const deletedMatches = await fetch('api/match', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ matchData: matchData })
+        });
+
+
         const data = await res.json()
-        console.log(data)
+        setGeneratedRounds(generatedRounds - 1);
+        console.log("Deleted round", data)
         fetchMatchData()
+        router.reload(window.location.pathname)
     }
 
     async function autoPair() {

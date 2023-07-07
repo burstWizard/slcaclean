@@ -87,13 +87,25 @@ export default async function handler(req, res) {
 
         let pairing_to_player = {};
 
+        function inverse(obj) {
+            var retobj = {};
+            for (var key in obj) {
+                retobj[obj[key]] = key;
+            }
+            return retobj;
+        }
+
         for (const player of players) {
             pairing_to_player[pairing.player_register_id] = player.id;
             pairing.insert_player(null, null, player_to_school_temp[player.schoolId], player.id);
         }
 
+        let player_to_pairing = inverse(pairing_to_player);
+
+        console.log("pairing to player", player_to_pairing)
+
         for (const match of matchData) {
-            pairing.insert_match(0, match.round.num, match.whiteId, match.blackId);
+            pairing.insert_match(0, match.round.num, player_to_pairing[match.whiteId], player_to_pairing[match.blackId]);
             console.log(match.blackId);
 
             if (match.blackId == null) {
@@ -102,13 +114,13 @@ export default async function handler(req, res) {
             }
 
             if (match.result == 0) {
-                pairing.update_match(pairing.match_register_id - 1, match.blackId, match.whiteId);
+                pairing.update_match(pairing.match_register_id - 1, player_to_pairing[match.blackId], player_to_pairing[match.whiteId]);
             }
             if (match.result == 5) {
                 pairing.update_match(pairing.match_register_id - 1, -1, -1);
             }
             if (match.result == 10) {
-                pairing.update_match(pairing.match_register_id - 1, match.whiteId, match.blackId);
+                pairing.update_match(pairing.match_register_id - 1, player_to_pairing[match.whiteId], player_to_pairing[match.blackId]);
             }
         }
 

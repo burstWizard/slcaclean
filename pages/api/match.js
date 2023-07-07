@@ -13,48 +13,54 @@ export default async function handler(req, res) {
 
     const user = await prisma.user.findUnique({
         where: {
-          email: session.user.email,
+            email: session.user.email,
         },
     })
-    if(req.method == "POST"){
+    if (req.method == "POST") {
 
         //Create default pairings with no data
 
         //first, figure out how many people are here!
 
         const players = await prisma.player.findMany({
-            where:{
+            where: {
                 sectionId: req.body.section
-        }})
-        
+            }
+        })
+
         const matchNum = Math.ceil(players.length / 2)
 
         let temp = []
 
         for (let i = 0; i < matchNum; i++) {
-            temp.push({roundId: req.body.round, board: i})
+            temp.push({ roundId: req.body.round, board: i })
         }
 
         console.log(temp)
 
         const createMany = await prisma.match.createMany({
-            data: temp 
+            data: temp
         })
 
         console.log(matchNum)
-        
-        res.status(200).json({message: createMany});
-    }
-    else{
+
+        res.status(200).json({ message: createMany });
+    } else if (req.method == "DELETE") {
+        await prisma.user.deleteMany({
+            where: {
+                roundId: req.body.matchData[0].roundId
+            },
+        })
+    } else {
         const matches = await prisma.match.findMany({
-            where:{
+            where: {
                 roundId: req.query.roundId
             },
-            orderBy:{
+            orderBy: {
                 board: "asc"
             }
         })
-        
+
         res.status(200).json({ matches: matches });
     }
 }
