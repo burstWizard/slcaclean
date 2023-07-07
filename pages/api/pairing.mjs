@@ -24,7 +24,7 @@ console.log('\n\n\n\n\n\n')
 */
 
 const BYE_SCORE_PENALTY = 8; // Multiplies based on player's score
-const POINT_DIFFERENCE_PENALTY = 0.4; // Multiplies by the score difference between players
+const POINT_DIFFERENCE_PENALTY = 20; // Multiplies by the score difference between players
 const SAME_SCHOOL_PENALTY = 32;
 const REPEAT_MATCH_PENALTY = 150;
 const REPEAT_BYE_PENALTY = 100;
@@ -1351,7 +1351,7 @@ export function run_round(tournament_index) {
         let optimal_matches = [];
         let error = Infinity;
 
-        while (true) {
+        while (tries < ATTEMPT_AMOUNT / 2) {
             //console.log("Full pairing attempt:", tries);
             tries++;
 
@@ -1451,7 +1451,7 @@ export function run_round(tournament_index) {
         new_matches.length < Math.floor(Object.keys(players).length / 2) ||
         failed
     ) {
-        console.log("Break Out At ", 10 * ATTEMPT_AMOUNT)
+        console.log("Break Out At ", 5 * ATTEMPT_AMOUNT)
         let tries = 0;
         let min_errors = Infinity;
         let best_matches = [];
@@ -1459,7 +1459,7 @@ export function run_round(tournament_index) {
         let match_hashes = []; // List of all premade match_hashes
 
         while (true) {
-            if (tries % 100000 == 0) console.log("Full pairing attempt:", tries);
+            if (tries % ATTEMPT_AMOUNT == 0) console.log("Full pairing attempt:", tries);
             tries++;
 
             // Sort the players based on wins
@@ -1532,16 +1532,10 @@ export function run_round(tournament_index) {
 
             //console.log(match_hashes, match_str, match_hash);
 
-            if (match_hashes.includes(match_hash) && tries < 10 * ATTEMPT_AMOUNT) {
-                tries -= 0.5
-                continue;
+            if (match_hashes.includes(match_hash) && tries < 10 * ATTEMPT_AMOUNT || matches.length < Math.floor((Object.keys(player_register).length) / 2)) {
+                //tries -= 0.25;
+                _errors = Infinity;
             } else {
-                if (matches.length < Math.floor((Object.keys(player_register).length) / 2)) {
-                    tries -= 0.5
-                    continue;
-                }
-
-
                 for (let i = 0; i < matches.length; i++) {
                     let match = matches[i];
                     for (let m of players[match.white_index].matches) {
@@ -1556,7 +1550,8 @@ export function run_round(tournament_index) {
                     if (Math.abs(players[match.white_index].score - players[match.black_index].score) > 1) {
                         //console.log("point diff")
                         //_failed = true;
-                        _errors += Math.abs(players[match.white_index].score - players[match.black_index].score) * POINT_DIFFERENCE_PENALTY; // 2
+                        _errors += Math.pow(POINT_DIFFERENCE_PENALTY, Math.abs(players[match.white_index].score - players[match.black_index].score) * 2); // 2
+                        //console.log("Point Diff Error AMOUNT", Math.abs(players[match.white_index].score - players[match.black_index].score), POINT_DIFFERENCE_PENALTY, Math.pow(POINT_DIFFERENCE_PENALTY, Math.abs(players[match.white_index].score - players[match.black_index].score) * 2))
                     }
 
                     //console.log(players[match.white_index].school, players[match.black_index].school)
@@ -1599,7 +1594,9 @@ export function run_round(tournament_index) {
                 best_leftover = _leftover;
             }
 
-            if (tries > 10 * ATTEMPT_AMOUNT || (_errors <= 0.16 && !_failed)) {
+            //console.log(tries, ATTEMPT_AMOUNT)
+
+            if ((tries > 5 * ATTEMPT_AMOUNT) || (min_errors <= 0.16 && !_failed && tries > (3 * ATTEMPT_AMOUNT))) {
                 console.log("BREAKING OUT AT");
                 //console.log(best_matches);
                 new_matches = best_matches;
@@ -2229,7 +2226,7 @@ function test_case_6() {
     //console.log("Final scores", sort_wins(4, read_players_db(0)));
 }
 
-let ATTEMPT_AMOUNT = 500000;
+let ATTEMPT_AMOUNT = 100000;
 
 if (process.argv[1].includes("pairing.mjs")) {
     test_case_1();
