@@ -158,11 +158,14 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
         router.reload(window.location.pathname)
     }
 
-    async function autoPair() {
+    async function autoPair(target) {
+        console.log("Starting to autopair")
+        document.getElementById("autopairLabel").innerText = "Loading..."
         const res = await fetch("/api/auto?sectionId=" + section + "&roundId=" + activeRound);
         const data = await res.json();
         console.log(data)
         fetchMatchData()
+        document.getElementById("autopairLabel").innerText = "Auto-Pair Round"
     }
     useEffect(() => console.log(activeRound + " " + activeRoundLocked), [activeRoundLocked])
 
@@ -203,9 +206,9 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
                     {/* Controls for pairing, including auto, save, and finalize. */}
                     {(!activeRoundLocked && matchData.length > 0) &&
                         <div className="flex items-center space-x-2">
-                            <button onClick={autoPair} className="flex space-x-2 items-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">
+                            <button onClick={e => autoPair(e.target)} className="flex space-x-2 items-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">
                                 <BoltIcon className='h-5 w-5' />
-                                <p>Auto-Pair Round</p>
+                                <p id="autopairLabel">Auto-Pair Round</p>
                             </button>
                             <button onClick={save} className="flex items-center space-x-2 disabled items-center bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded max-w-fit cursor-pointer">
                                 <CloudArrowUpIcon className="h-5 w-5" />
