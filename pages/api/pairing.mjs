@@ -25,8 +25,8 @@ console.log('\n\n\n\n\n\n')
 
 const BYE_SCORE_PENALTY = 8; // Multiplies based on player's score
 const POINT_DIFFERENCE_PENALTY = 20; // Multiplies by the score difference between players
-const SAME_SCHOOL_PENALTY = 32;
-const REPEAT_MATCH_PENALTY = 150;
+const SAME_SCHOOL_PENALTY = 32; // 32
+const REPEAT_MATCH_PENALTY = Infinity; // 150
 const REPEAT_BYE_PENALTY = 100;
 
 /**/
@@ -1209,14 +1209,6 @@ export function run_round(tournament_index) {
 
         failed = false;
 
-        for (let match of matches) {
-            if (
-                players[match.white_index].school == players[match.black_index].school
-            ) {
-                failed = true;
-            }
-        }
-
         for (let i = 0; i < matches.length; i++) {
             let match = matches[i];
             for (let m of players[match.white_index].matches) {
@@ -1240,6 +1232,7 @@ export function run_round(tournament_index) {
         }
     }
 
+    /*
     console.log("Attempts:", tries);
 
     if (
@@ -1447,6 +1440,8 @@ export function run_round(tournament_index) {
         }
     }
 
+    */
+
     if (
         new_matches.length < Math.floor(Object.keys(players).length / 2) ||
         failed
@@ -1536,6 +1531,7 @@ export function run_round(tournament_index) {
             if (match_hashes.includes(match_hash) && tries < 10 * ATTEMPT_AMOUNT || matches.length < Math.floor((Object.keys(player_register).length) / 2)) {
                 //tries -= 0.25;
                 _errors = Infinity;
+                _failed = true;
             } else {
                 for (let i = 0; i < matches.length; i++) {
                     let match = matches[i];
@@ -1548,10 +1544,10 @@ export function run_round(tournament_index) {
                         }
                     }
 
-                    if (Math.abs(players[match.white_index].score - players[match.black_index].score) > 1) {
+                    if (Math.abs(players[match.white_index].score - players[match.black_index].score) >= 0.5) {
                         //console.log("point diff")
                         //_failed = true;
-                        _errors += Math.pow(POINT_DIFFERENCE_PENALTY, Math.abs(players[match.white_index].score - players[match.black_index].score) * 2); // 2
+                        _errors += Math.pow(POINT_DIFFERENCE_PENALTY, Math.abs(players[match.white_index].score - players[match.black_index].score) * 2.2); // 2
                         //console.log("Point Diff Error AMOUNT", Math.abs(players[match.white_index].score - players[match.black_index].score), POINT_DIFFERENCE_PENALTY, Math.pow(POINT_DIFFERENCE_PENALTY, Math.abs(players[match.white_index].score - players[match.black_index].score) * 2))
                     }
 
@@ -1598,6 +1594,8 @@ export function run_round(tournament_index) {
             //console.log(tries, ATTEMPT_AMOUNT)
 
             if ((Date.now() - start >= 6000) || (tries > 5 * ATTEMPT_AMOUNT) || (min_errors <= 0.16 && !_failed && tries > (2.5 * ATTEMPT_AMOUNT))) {
+                //if ((tries > 5 * ATTEMPT_AMOUNT) || (min_errors <= 0.16 && !_failed && tries > (2.5 * ATTEMPT_AMOUNT))) {
+                console.log(Date.now() - start)
                 if (Date.now() - start >= 6000) {
                     console.log("Broke out because of time")
                 }
@@ -1766,13 +1764,13 @@ function random_match_result(match_index) {
         return;
     }
 
-    if (Math.random() >= 0.52) {
+    if (Math.random() >= 0.47) {
         update_match(
             match_index,
             match_register[match_index].white_player_index,
             match_register[match_index].black_player_index
         );
-    } else if (Math.random <= 0.47) {
+    } else if (Math.random <= 0.43) {
         update_match(
             match_index,
             match_register[match_index].black_player_index,
@@ -2231,7 +2229,7 @@ function test_case_6() {
     //console.log("Final scores", sort_wins(4, read_players_db(0)));
 }
 
-let ATTEMPT_AMOUNT = 100000;
+let ATTEMPT_AMOUNT = 10000;
 
 if (process.argv[1].includes("pairing.mjs")) {
     test_case_1();
