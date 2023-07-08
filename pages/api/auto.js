@@ -165,7 +165,7 @@ export default async function handler(req, res) {
             })
         }
 
-        if (typeof bye_player != "string" && bye_player.length == 0) {
+        if (typeof bye_player != "string" && bye_player && bye_player.length == 0) {
             bye_player = null;
         }
 
