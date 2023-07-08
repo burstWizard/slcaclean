@@ -918,6 +918,158 @@ export function make_matches(
     }
 }
 
+function original_make_matches(players, players_nums, leftover) {
+    let full_tries = 0;
+    let failed = false;
+    //let potential_fail = false;
+
+    while (true) {
+        //console.log("Match attempt: ", full_tries);
+        full_tries += 1;
+        // Deep copy just in case we need to try again
+        let ww = [...players_nums];
+        let new_matches = [];
+        let repeat_match = false;
+        let same_school = false;
+        let ll = leftover;
+        let l = ww.length; // Need to initialize because ww.length changes over time
+
+        // Try to make the most matches as possible 
+        // Floor division by 2 gives the most possible matches for a set of players
+        for (let ii = 0; ii < Math.floor(l / 2); ii++) {
+            let p1_ww_index;
+
+            // If there is a leftover player from a previous bracket, try to minimize this by rolling over
+            // For example, if there is a player with a score of 2, but there are 5 people with the score of 2, they get rolled over
+            // Rather than giving someone who has a higher chance of winning a bye, try to match that person with a score of 1
+            // This eventually cascades down if all other groups have an even amoutn of players
+            if (ll != null && ww.indexOf(String(ll)) != -1) {
+                // Get Key By Value
+                p1_ww_index = ww.indexOf(String(ll));
+            } else {
+                // Randomly choose player
+                p1_ww_index = Math.floor(Math.random() * (ww.length));
+            }
+
+            let p1 = players[ww[p1_ww_index]];
+
+            // Remove p1 from the ww list (ew that looks dumb)
+            ww.splice(ww.indexOf(String(p1.index)), 1);
+
+            // Assume p2 goes to the same school as p1 so the loop acts like a do {...} while (...)
+            let p2_school = p1.school;
+            let p2_ww_index = null;
+            let p2 = null;
+
+            // Keep track
+            // If it takes to many tries, we break out and retry the pairing with anothe randomization
+            let tries = 0;
+
+            // P1 and P2 are NOT allowed to be from the same school unles ABSOLUTELY NECESSARY
+            while (p1.school == p2_school) {
+                //console.log(p2_school, p1.school, p1.school == p2_school);
+                // Keep trying
+                tries += 1;
+
+                // Random select p2 and initialize all of the numbers
+                p2_ww_index = Math.floor(Math.random() * (ww.length));
+                p2 = players[ww[p2_ww_index]];
+                p2_school = p2.school;
+
+                // Ensure p1 hasn't played p2 before
+                for (let m of p1.matches) {
+                    if (m.opponent == p2_ww_index) {
+
+                        repeat_match = true;
+                    }
+                }
+
+                if (p1.school == p2_school) {
+                    same_school = true;
+                }
+
+                // Too many tries, break
+                if (tries > 50) {
+                    break;
+                }
+
+                // 1 player leftover, no more matches can be made
+                if (ww.length == 1) {
+                    break;
+                }
+            }
+
+            if (p1.school == p2_school) {
+                if (ww.length == 2) {
+                }
+                same_school = true;
+            }
+
+            if (full_tries < 100) {
+                if ((players_nums.length > 2 && ((tries > 50 && full_tries < 50) || same_school || (repeat_match && (tries < 50 && full_tries < 50))))) { //
+                    failed = true;
+                    repeat_match = false;
+                    same_school = false;
+
+                    if (full_tries > 100) {
+                        failed = true;
+                    }
+
+                    break;
+                }
+            }
+
+            // Remove p2 from ww because the decision is final
+            ww.splice(ww.indexOf(String(p2.index)), 1);
+
+            // If player 1 has played white more than player 2, make player 2 play white
+            let n1 = p1.index;
+            let n2 = p2.index;
+
+            if (p1.record.white > p2.record.white) {
+                let tmp = n1;
+                n1 = n2;
+                n2 = tmp;
+            }
+
+            // No point in returning index1, index2, color1 and color2
+            // TODO: Inconsistent naming with white_player_index and black_player_index
+            new_matches.push({
+                white_index: n1,
+                black_index: n2,
+            });
+        }
+
+        // If we've failed, reset and restart
+        if (failed && full_tries < 100) {
+            failed = false;
+            continue;
+        }
+
+        // Somehow nothing failed and nothing broke
+        ll = null;
+
+        // If we have a leftover player, try to make a bye match
+        if (ww.length != 0) {
+            ll = ww[0];
+
+            // The player has already had a bye, and two byes in one tournament is sad :(
+            // There is a chance this could break if the tournament has 5 people and 6 rounds... But then again, swiss matching would break either way
+            // TODO: Maybe check if they don't have the least amount of byes? 
+            if (players[ww[0]].record.bye != 0) {
+                full_tries -= 1;
+                continue;
+            }
+        }
+
+        // We've successfully finished the matching
+        // Return a dictionary containing the new matches and the leftover
+        // TODO: This looks dumb and is inconvenient.
+
+        return { new_matches: new_matches, ll: ll };
+    }
+}
+
 function old_make_matches(players, players_nums, leftover) {
 
     let full_tries = 0;
@@ -1159,7 +1311,69 @@ export function run_round(tournament_index) {
     console.log("Starting matching process");
     console.log(sort_wins(current_round, players));
 
-    while (tries < 10000) {
+    while (tries < 1000) {
+        //console.log("Full pairing attempt:", tries);
+        tries++;
+
+        // Sort the players based on wins
+        let win_list = sort_wins(current_round, players);
+
+        // Initialize the rolling left over player and list to store matches
+        let _leftover = null;
+        let matches = [];
+
+        // TODO: Make it not be xx
+        for (let xx = 0; xx < win_list.length; xx++) {
+            // Select each score bracket, in reverse
+            let ww = win_list[win_list.length - xx - 1];
+
+            // If we have a leftover, add it to the current section so it rolls over
+            if (_leftover != null) {
+                ww.push(_leftover);
+            }
+
+            // Try making matches
+            let n_matches;
+            let temp = original_make_matches(players, ww, _leftover);
+            n_matches = temp.new_matches;
+            _leftover = temp.ll;
+
+            // If we have a leftover, update
+            if (_leftover && _leftover.length == 0) {
+                _leftover = null;
+            }
+
+            // Update new matches
+            matches.push(...n_matches);
+        }
+
+        let failed = false;
+
+        for (let i = 0; i < matches.length; i++) {
+            let match = matches[i];
+            for (let m of players[match.white_index].matches) {
+                if (m.opponent == match.black_index) {
+                    failed = true;
+                }
+            }
+
+            if (
+                players[match.white_index].school == players[match.black_index].school
+            ) {
+                failed = true;
+            }
+        }
+
+        new_matches = matches;
+        leftover = _leftover;
+
+        if (!failed) {
+            break;
+        }
+    }
+
+
+    while ((failed || new_matches.length < Math.floor(Object.keys(players).length / 2)) && tries < 1000) {
         //console.log("Full pairing attempt:", tries);
         tries++;
 
@@ -1686,6 +1900,11 @@ export function run_round(tournament_index) {
         );
     }
 
+
+    if (leftover && typeof leftover == "string" || typeof leftover == "number") {
+        leftover = [leftover];
+    }
+
     if (
         Math.floor(Object.keys(players).length / 2) <
         Object.keys(players).length / 2 &&
@@ -1708,7 +1927,7 @@ export function run_round(tournament_index) {
         leftover.push(missing_player);
     }
 
-    if (leftover.length > 0) {
+    if (leftover && leftover.length > 0) {
         console.log("Leftover points: ", players[leftover[0]].score);
         console.log("Leftover player byes:", players[leftover[0]].record.bye);
     }
@@ -1722,7 +1941,7 @@ export function run_round(tournament_index) {
             Number(leftover)
         );
         update_match_bye(index);
-    } else if (leftover.length > 0) {
+    } else if (leftover && leftover.length > 0) {
         let index = insert_match(
             tournament_index,
             current_round,
