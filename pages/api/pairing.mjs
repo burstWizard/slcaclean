@@ -633,7 +633,7 @@ export function sort_wins(current_round, players) {
 
     // Append a seperate list for each possible score
 
-    for (let xx = 0; xx <= current_round * 2 + 4; xx++) {
+    for (let xx = 0; xx <= 30; xx++) {
         win_list.push([]);
     }
 
@@ -923,11 +923,15 @@ function original_make_matches(players, players_nums, leftover) {
     let failed = false;
     //let potential_fail = false;
 
+    if (!players_nums) {
+        players_nums = [];
+    }
+
     while (true) {
         //console.log("Match attempt: ", full_tries);
         full_tries += 1;
         // Deep copy just in case we need to try again
-        let ww = [...players_nums];
+        let ww = players_nums ? [...players_nums] : [];
         let new_matches = [];
         let repeat_match = false;
         let same_school = false;
@@ -1013,6 +1017,7 @@ function original_make_matches(players, players_nums, leftover) {
 
                     if (full_tries > 100) {
                         failed = true;
+                        return { new_matches: [], ll: null };
                     }
 
                     break;
@@ -1057,7 +1062,6 @@ function original_make_matches(players, players_nums, leftover) {
             // There is a chance this could break if the tournament has 5 people and 6 rounds... But then again, swiss matching would break either way
             // TODO: Maybe check if they don't have the least amount of byes? 
             if (players[ww[0]].record.bye != 0) {
-                full_tries -= 1;
                 continue;
             }
         }
@@ -2268,6 +2272,31 @@ function test_case_3() {
         random_match_result(x * 3 + i);
     }
 
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 4 + i);
+    }
+
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 5 + i);
+    }
+
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 6 + i);
+    }
+
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 7 + i);
+    }
+
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 8 + i);
+    }
+
     //console.log("Final scores", sort_wins(4, read_players_db(0)));
 }
 
@@ -2451,10 +2480,10 @@ function test_case_6() {
 let ATTEMPT_AMOUNT = 10000;
 
 if (process.argv[1].includes("pairing.mjs")) {
-    test_case_1();
-    console.log('\n\n\n\n')
-    test_case_2();
-    console.log('\n\n\n\n')
+    //test_case_1();
+    //console.log('\n\n\n\n')
+    //test_case_2();
+    //console.log('\n\n\n\n')
     test_case_3();
     //test_case_4();
     //test_case_5();

@@ -131,6 +131,7 @@ export default async function handler(req, res) {
         }
 
 
+        console.log("Starting Pairing!")
         let temp2 = pairing.run_round(0);
         console.log("Pairing module results:", temp2);
         let new_matches = temp2[0], bye_player = temp2[1];
