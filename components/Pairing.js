@@ -48,7 +48,7 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
     //Initial Setup, get the rounds
     useEffect(() => {
         fetchRounds()
-    }, [])
+    })
 
     useEffect(() => {
         console.log(sync)
@@ -88,7 +88,6 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
                 body: JSON.stringify({ sectionId: section, roundId: activeRound, setting: 'lock' })
             })
             fetchRounds()
-            alert("Locked round!")
         }
         else {
             alert('Oh no! You haven\' saved your matches!')
@@ -123,8 +122,6 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
                 },
                 body: JSON.stringify({ matchData: matchData }),
             })
-
-            alert("Yay! Saved matches!");
         }
     }
 
@@ -166,9 +163,9 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
             const data = await res.json();
             console.log(data)
             fetchMatchData()
-            alert("Successfully paired!")
+            //alert("Successfully paired!")
         } catch {
-            alert("There was an error")
+            alert("There was an error...")
         }
         document.getElementById("autopairLabel").innerText = "Auto-Pair Round"
 

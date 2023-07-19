@@ -20,14 +20,15 @@ export default function SectionSelector({ activeTourney, activeSection, setActiv
         }
         setSections(temp)
         setActiveSection(temp[temp.length - 1])
+
+        return 0;
     }
 
     useEffect(() => {
         //first time setup
-        fetchSections()
-
+        fetchSections();
         //set active section to first of sections
-    }, [])
+    })
 
 
     async function deleteSection() {
@@ -70,13 +71,11 @@ export default function SectionSelector({ activeTourney, activeSection, setActiv
                             if (e.key == "Enter") {
                                 addNewSection()
                                 setNewSectionName("")
-                                alert("Created new section \"" + newSectionName + "\"")
                             }
                         }} onChange={(e) => setNewSectionName(e.target.value)} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="New Section Name" />
                         <button onClick={() => {
                             addNewSection()
                             setNewSectionName("")
-                            alert("Created new section \"" + newSectionName + "\"")
                         }} className="bg-green-500 hover:bg-green-700 text-white font-bold rounded">
                             <CheckIcon className='h-8 w-8' />
                         </button>

@@ -927,7 +927,7 @@ function original_make_matches(players, players_nums, leftover) {
         players_nums = [];
     }
 
-    while (true) {
+    while (full_tries < 100) {
         //console.log("Match attempt: ", full_tries);
         full_tries += 1;
         // Deep copy just in case we need to try again
@@ -1325,6 +1325,7 @@ export function run_round(tournament_index) {
         // Initialize the rolling left over player and list to store matches
         let _leftover = null;
         let matches = [];
+        let temp;
 
         // TODO: Make it not be xx
         for (let xx = 0; xx < win_list.length; xx++) {
@@ -1338,38 +1339,45 @@ export function run_round(tournament_index) {
 
             // Try making matches
             let n_matches;
-            let temp = original_make_matches(players, ww, _leftover);
-            n_matches = temp.new_matches;
-            _leftover = temp.ll;
+            temp = original_make_matches(players, ww, _leftover);
+            if (temp) {
+                n_matches = temp.new_matches;
+                _leftover = temp.ll;
 
-            // If we have a leftover, update
-            if (_leftover && _leftover.length == 0) {
-                _leftover = null;
+                // If we have a leftover, update
+                if (_leftover && _leftover.length == 0) {
+                    _leftover = null;
+                }
+
+                // Update new matches
+                matches.push(...n_matches);
             }
-
-            // Update new matches
-            matches.push(...n_matches);
         }
 
         let failed = false;
 
-        for (let i = 0; i < matches.length; i++) {
-            let match = matches[i];
-            for (let m of players[match.white_index].matches) {
-                if (m.opponent == match.black_index) {
+        if (temp) {
+
+            for (let i = 0; i < matches.length; i++) {
+                let match = matches[i];
+                for (let m of players[match.white_index].matches) {
+                    if (m.opponent == match.black_index) {
+                        failed = true;
+                    }
+                }
+
+                if (
+                    players[match.white_index].school == players[match.black_index].school
+                ) {
                     failed = true;
                 }
             }
 
-            if (
-                players[match.white_index].school == players[match.black_index].school
-            ) {
-                failed = true;
-            }
+            new_matches = matches;
+            leftover = _leftover;
+        } else {
+            failed = true;
         }
-
-        new_matches = matches;
-        leftover = _leftover;
 
         if (!failed) {
             break;
@@ -1911,7 +1919,7 @@ export function run_round(tournament_index) {
 
     if (
         Math.floor(Object.keys(players).length / 2) <
-        Object.keys(players).length / 2 &&
+        Object.keys(players).length / 2 && leftover &&
         leftover.length < 1
     ) {
         let missing_player = null;
@@ -2295,6 +2303,36 @@ function test_case_3() {
     run_round(0);
     for (let i = 0; i < x; i++) {
         random_match_result(x * 8 + i);
+    }
+
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 9 + i);
+    }
+
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 10 + i);
+    }
+
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 11 + i);
+    }
+
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 12 + i);
+    }
+
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 13 + i);
+    }
+
+    run_round(0);
+    for (let i = 0; i < x; i++) {
+        random_match_result(x * 14 + i);
     }
 
     //console.log("Final scores", sort_wins(4, read_players_db(0)));
