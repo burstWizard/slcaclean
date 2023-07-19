@@ -28,7 +28,7 @@ export default function TournamentList({ active }) {
     //On inital render, run fetchTournaments
     useEffect(() => {
         fetchTournaments()
-    })
+    }, [tournaments])
 
     //Add new tournament
     async function addNewTournament() {

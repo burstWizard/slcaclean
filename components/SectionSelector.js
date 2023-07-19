@@ -28,7 +28,7 @@ export default function SectionSelector({ activeTourney, activeSection, setActiv
         //first time setup
         fetchSections();
         //set active section to first of sections
-    })
+    }, [])
 
 
     async function deleteSection() {

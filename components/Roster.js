@@ -21,6 +21,7 @@ export default function Roster({ section }) {
 
     fetchRoster();
   }, [section])
+
   async function deleteSchool(name) {
     await fetch('/api/roster', {
       method: 'DELETE',
