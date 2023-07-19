@@ -31,8 +31,10 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
                     console.log("data.round", data.rounds)
                     console.log(data.rounds.length - 2);
                     setGeneratedRounds(data.rounds.length - 2)
-                    setActiveRound(data.rounds[data.rounds.length - 1].id)
-                    setActiveRoundLocked(data.rounds[data.rounds.length - 1].locked)
+                    if (!activeRound) {
+                        setActiveRound(data.rounds[data.rounds.length - 1].id)
+                        setActiveRoundLocked(data.rounds[data.rounds.length - 1].locked)
+                    }
                 }
             })
     }
