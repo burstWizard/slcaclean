@@ -31,9 +31,9 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
                     console.log("data.round", data.rounds)
                     console.log(data.rounds.length - 2);
                     setGeneratedRounds(data.rounds.length - 2)
+                    setActiveRoundLocked(data.rounds[data.rounds.length - 1].locked)
                     if (!activeRound) {
                         setActiveRound(data.rounds[data.rounds.length - 1].id)
-                        setActiveRoundLocked(data.rounds[data.rounds.length - 1].locked)
                     }
                 }
             })
@@ -50,7 +50,7 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
     //Initial Setup, get the rounds
     useEffect(() => {
         fetchRounds()
-    })
+    }, [])
 
     useEffect(() => {
         console.log(sync)
@@ -90,6 +90,7 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
                 body: JSON.stringify({ sectionId: section, roundId: activeRound, setting: 'lock' })
             })
             fetchRounds()
+            alert("Success!")
         }
         else {
             alert('Oh no! You haven\' saved your matches!')
@@ -113,7 +114,6 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
         if (unfinished) {
             alert("Oh no! It looks like all your matches don't have results! Unable to save matches :(")
         } else {
-
             setMatchesSaved(true);
             matchSaved = true;
             //console.log('match data' + matchData)
