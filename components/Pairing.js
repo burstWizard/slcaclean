@@ -18,6 +18,8 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
     const [matchesSaved, setMatchesSaved] = useState(false);
     const router = useRouter();
 
+    fetchRounds()
+
     //Fetch Rounds from the "Rounds" table.
     async function fetchRounds() {
         await fetch("/api/rounds?sectionId=" + section)
@@ -90,10 +92,10 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
                 body: JSON.stringify({ sectionId: section, roundId: activeRound, setting: 'lock' })
             })
             fetchRounds()
-            alert("Success!")
+            //alert("Success!")
         }
         else {
-            alert('Oh no! You haven\' saved your matches!')
+            alert('Oh no! You haven\'t saved your matches!')
         }
 
     }
@@ -124,6 +126,7 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
                 },
                 body: JSON.stringify({ matchData: matchData }),
             })
+            fetchRounds()
         }
     }
 
@@ -154,7 +157,8 @@ export default function Pairing({ section, generatedRounds, setGeneratedRounds }
         setGeneratedRounds(generatedRounds - 1);
         console.log("Deleted round", data)
         fetchMatchData()
-        router.reload(window.location.pathname)
+        fetchRounds()
+        //router.reload(window.location.pathname)
     }
 
     async function autoPair(target) {
